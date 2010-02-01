@@ -21,7 +21,9 @@ use FastObject;			# fast object interface
 
 #=------------------------------------------------------------------------ main()
 
+use capo;	# class
 use pracownik;	# class
+_internal_class_Dump('capo',1);
 _internal_class_Dump('pracownik',1);
 
 

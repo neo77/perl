@@ -43,6 +43,7 @@ sub class(&;$) {
 		our \$max_objects = 1;
 		our \@objects = ();
 		our \@free_list = (0);
+		our \$code = $code;
 EOE
 }
 	&$code;
@@ -55,7 +56,7 @@ EOE
 #=------
 #  has
 #=------
-#* put_description_here
+#* add attribs to class
 # RETURN: put_return_value_here
 sub has($;$$) {
 	my ($attrib_name, $attrib_default, $attrib_type) = @_;
@@ -65,13 +66,12 @@ sub has($;$$) {
 	print "evaluating: \$$classname\::attribs{$attrib_name} = \$$classname\::attribs_size++; (".(caller).")\n";
 	eval "\$$classname\::attribs{$attrib_name} = \$$classname\::attribs_size++;"
 }
-# TODO (autoACR): update function/group documentation at header (put_description_here)
 # TODO (autoACR): update function documentation at header (put_return_value_here)
 
 #=-----------
 #  inherite
 #=-----------
-#* put_description_here
+#* inheriting support
 # RETURN: put_return_value_here
 sub inherite {
 	my $inherited = shift;
@@ -79,14 +79,13 @@ sub inherite {
 	my $classname = caller;
 	print "Inheriting from $inherited ($classname)\n";
 	# create package globals
+	$FastObject::_INH_CLASS = $classname;
 	eval <<EOE;
-		\$FastObject::_INH_CLASS = $classname;
 		use base '$inherited';
 EOE
-		
-		
+	eval "&$inherited::code";
+	$FastObject::_INH_CLASS = undef;	
 }
-# TODO (autoACR): update function/group documentation at header (put_description_here)
 # TODO (autoACR): update function documentation at header (put_return_value_here)
 
 
