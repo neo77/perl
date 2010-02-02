@@ -11,7 +11,6 @@ package pracownik;
 use strict;
 use warnings;
 
-
 #=------------------------------------------------------------------------ USE, CONSTANTS..
 
 use FastObject;
@@ -23,8 +22,6 @@ our $VERSION = 1.0;
 #=------------------------------------------------------------------------ CONSTRUCTOR
 # only for constructor and destructor (if exists)
 
-use osoba;
-# FIXME (autoACR): write why are you using osoba (do you realy need it?)
 class {
 	inherite 'osoba';
 	has 'stanowisko';
@@ -43,6 +40,18 @@ class {
 #=------------------------------------------------------------------------ PUBLIC FUNCTIONS
 #
 
+#=----------
+#  getinfo
+#=----------
+#* put_description_here
+# RETURN: put_return_value_here
+sub getinfo {
+	my $self = shift;
+	$self->SUPER::getinfo;
+	print "Pracownik mowi papa\n";
+}
+# TODO (autoACR): update function/group documentation at header (put_description_here)
+# TODO (autoACR): update function documentation at header (put_return_value_here)
 
 1;
 

@@ -28,5 +28,12 @@ _internal_class_Dump('osoba',1);
 _internal_class_Dump('capo',1);
 
 
+my $obj = new capo;
+$obj->getinfo;
+my $obj2 = new pracownik;
+my $obj3 = new pracownik;
+$obj2->getinfo;
+$obj3->getinfo;
+print Dumper($obj);
 
 

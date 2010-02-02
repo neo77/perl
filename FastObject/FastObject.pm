@@ -16,12 +16,15 @@ use Data::Dumper; # _internal_class_Dump
 
 our $VERSION = 1.0;
 
-use base 'Exporter';
-# FIXME (autoACR): write why are you using base (do you realy need it?)
+use base 'Exporter';	# exporting functions
+
 our @EXPORT = qw(class has _internal_class_Dump inherite);
 our @INH_CLASS = ();
 our $_INH_CLASS = '';
 my %has_code;
+
+#=------------------------------------------------------------------------ PUBLIC FUNCTIONS (CLASS)
+#
 
 #=--------
 #  class
@@ -45,9 +48,44 @@ sub class(&;$) {
 			our \$max_objects = 1;
 			our \@objects = ();
 			our \@free_list = (0);
+
+			sub new {
+				my (\$class,\%params) = \@_;
+			
+				my \$self = (\@free_list) ? ( shift \@free_list ) : \$max_objects++;
+
+				return bless \\\$self, \$_[0];
+			}
+			sub DESTROY {
+				push \@free_list, \${\$_[0]};
+			}
 EOE
 		print "has_code{$classname} = p_code\n";
 		$has_code{"$classname"} = $p_code;
+
+=pod
+				for my $key (keys %params) {
+					$objects[ $self*$attribs_size + $attribs{"$key"} ] = $params{$key} || $default[$attribs{"$key"}];
+				}
+				for my $key (keys %params) {
+	#				$object[ $self*$attribs_size + $attribs{"$key"} ] = $params{$key} || $default[$attribs{"$key"}];
+	#			}
+		{"$classname\::new"} = sub { 
+				my ($class,%params) = @_;
+
+				my $self = (@{"$classname\::free_list"})?(shift @{"$classname\::free_list"}) : ${"$classname\::max_object"}++;
+	#			for my $key (keys %params) {
+	#				$object[ $self*$attribs_size + $attribs{"$key"} ] = $params{$key} || $default[$attribs{"$key"}];
+	#			}
+
+				return bless \$self, $_[0];
+				
+		};
+
+		#	sub DESTROY {
+		#		push \@free_list, \${\$_[0]};
+		#	}
+=cut
 }
 
 	print "runs has_code ($classname)\n";
@@ -83,7 +121,7 @@ sub inherite {
 	my $classname = caller;
 	print "Inheriting from $inherited ($classname)\n";
 	# create package globals
-	eval "require $inherited ";
+	eval "package $classname; use base '$inherited' ";
 
 	$_INH_CLASS = $classname unless $_INH_CLASS;
 	print "runs has_code ($inherited)\n";
@@ -95,8 +133,8 @@ sub inherite {
 #=-----------------------
 #  _internal_class_Dump
 #=-----------------------
-#* put_description_here
-# RETURN: put_return_value_here
+#* make class dump (internal)
+# RETURN: nothing.. just prints info
 sub _internal_class_Dump($;$) {
 	my ($classname, $extend) = @_;
 	print Dumper({ 
@@ -112,8 +150,14 @@ sub _internal_class_Dump($;$) {
 		});
 	}
 }
-# TODO (autoACR): update function/group documentation at header (put_description_here)
-# TODO (autoACR): update function documentation at header (put_return_value_here)
+
+#=------------------------------------------------------------------------ PUBLIC FUNCTIONS (OBJECT)
+
+
+
+
+
+
 # class Mas {
 # 	has cos
 # 	has wos
@@ -130,16 +174,7 @@ sub _internal_class_Dump($;$) {
 
 # has doklada do attributes w danym pakiecie info
 #
-#=------------------------------------------------------------------------ PRIVATE FUNCTIONS
-# start every private function with '_' sign
 
-
-#=------------------------------------------------------------------------ CLASS FUNCTIONS
-# start every class function with Capital letter
-
-
-#=------------------------------------------------------------------------ PUBLIC FUNCTIONS
-#
 
 
 1;
@@ -174,3 +209,29 @@ sub x {
 	($_[1]) ? $object[ ${$_[0]}*5 + 0 ] = $_[1] : $object[ ${$_[0]}*5 + 0 ];
 }
 
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
+# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 34)
