@@ -19,7 +19,9 @@ our $VERSION = 1.0;
 use base 'Exporter';
 # FIXME (autoACR): write why are you using base (do you realy need it?)
 our @EXPORT = qw(class has _internal_class_Dump inherite);
-our $_INH_CLASS = undef;
+our @INH_CLASS = ();
+our $_INH_CLASS = '';
+my %has_code;
 
 #=--------
 #  class
@@ -27,30 +29,33 @@ our $_INH_CLASS = undef;
 #* class definition
 # RETURN: true
 sub class(&;$) {
-	my ($code) = @_;
+	my ($p_code) = @_;
 	my $classname = $_INH_CLASS || caller;
 
-	print "Running \%$classname (".(caller).")\n";
+	print "---> \%$classname (".(caller).")\n";
 	# create package globals
 	unless ($_INH_CLASS)  {
-	print "Creating $classname (globals)\n";
-	eval <<EOE;
-		package $classname;
-		use strict;
-		# --- package const
-		our \%attribs;
-		our \$attribs_size = 0;
-		our \$max_objects = 1;
-		our \@objects = ();
-		our \@free_list = (0);
-		our \$code = $code;
+		print "Creating $classname (globals)\n";
+		eval <<EOE;
+			package $classname;
+			use strict;
+			# --- package const
+			our \%attribs;
+			our \$attribs_size = 0;
+			our \$max_objects = 1;
+			our \@objects = ();
+			our \@free_list = (0);
 EOE
+		print "has_code{$classname} = p_code\n";
+		$has_code{"$classname"} = $p_code;
 }
-	&$code;
 
+	print "runs has_code ($classname)\n";
+	&{$has_code{"$classname"}};
+
+	$_INH_CLASS = undef if $_INH_CLASS eq $classname;
 	# create new
 	# create accessors
-	$_INH_CLASS = undef;
 }
 
 #=------
@@ -62,7 +67,6 @@ sub has($;$$) {
 	my ($attrib_name, $attrib_default, $attrib_type) = @_;
 
 	my $classname = $_INH_CLASS || caller;
-
 	print "evaluating: \$$classname\::attribs{$attrib_name} = \$$classname\::attribs_size++; (".(caller).")\n";
 	eval "\$$classname\::attribs{$attrib_name} = \$$classname\::attribs_size++;"
 }
@@ -79,12 +83,11 @@ sub inherite {
 	my $classname = caller;
 	print "Inheriting from $inherited ($classname)\n";
 	# create package globals
-	$FastObject::_INH_CLASS = $classname;
-	eval <<EOE;
-		use base '$inherited';
-EOE
-	eval "&$inherited::code";
-	$FastObject::_INH_CLASS = undef;	
+	eval "require $inherited ";
+
+	$_INH_CLASS = $classname unless $_INH_CLASS;
+	print "runs has_code ($inherited)\n";
+	&{$has_code{"$inherited"}};
 }
 # TODO (autoACR): update function documentation at header (put_return_value_here)
 

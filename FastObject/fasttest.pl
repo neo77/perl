@@ -22,9 +22,10 @@ use FastObject;			# fast object interface
 #=------------------------------------------------------------------------ main()
 
 use capo;	# class
-use pracownik;	# class
+use osoba;
+# FIXME (autoACR): write why are you using osoba (do you realy need it?)
+_internal_class_Dump('osoba',1);
 _internal_class_Dump('capo',1);
-_internal_class_Dump('pracownik',1);
 
 
 

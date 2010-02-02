@@ -24,8 +24,8 @@ our $VERSION = 1.0;
 # only for constructor and destructor (if exists)
 
 class {
-	has 'pracownicy';
 	inherite 'pracownik';
+	has 'pracownicy';
 };
 
 
