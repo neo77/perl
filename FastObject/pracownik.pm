@@ -23,10 +23,12 @@ our $VERSION = 1.0;
 #=------------------------------------------------------------------------ CONSTRUCTOR
 # only for constructor and destructor (if exists)
 
+use osoba;
+# FIXME (autoACR): write why are you using osoba (do you realy need it?)
 class {
+	inherite 'osoba';
 	has 'stanowisko';
 	has 'placa';
-	inherite 'osoba';
 };
 
 
