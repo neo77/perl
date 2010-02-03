@@ -49,3 +49,12 @@ my @strings = (
 
 print "$_\n" for @strings;
 
+# Resp: Aristotle Pagaltzis
+# >   use encoding 'utf8';
+#
+# The `encoding` pragma is broken. Do not use it.
+#
+# You want
+#
+#    use open ':encoding(UTF-8)', ':std';
+#
