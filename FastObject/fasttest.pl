@@ -24,16 +24,14 @@ use FastObject;			# fast object interface
 use capo;	# class
 use osoba;
 # FIXME (autoACR): write why are you using osoba (do you realy need it?)
-_internal_class_Dump('osoba',1);
-_internal_class_Dump('capo',1);
 
 
 my $obj = new capo;
-$obj->getinfo;
-my $obj2 = new pracownik;
-my $obj3 = new pracownik;
-$obj2->getinfo;
-$obj3->getinfo;
-print Dumper($obj);
+my $obj2 = new capo;
+my $obj3 = new capo;
+print $obj->pracownicy;
+$obj2->pracownicy(3);
+print $obj->pracownicy;
+_internal_class_Dump('capo',1);
 
 

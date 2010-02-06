@@ -169,14 +169,16 @@ sub get_desc {
 package APos;
 
 use Data::Dumper;
-use APos::core::APosObj;
+use FastObject;
 
-has 'x';
-has 'y'; 
-has 'z'; 
-has 'name';
-has 'color';
-has 'desc';
+class {
+	has 'x';
+	has 'y'; 
+	has 'z'; 
+	has 'name';
+	has 'color';
+	has 'desc';
+};
 
 #=---------------------------------------------------- main
 
@@ -255,7 +257,7 @@ cmpthese( timethese( 100_000, {
     },
 
 	'APos' => sub {
-		my $obj = APos->construct( x=>11, y=>22, name=>'pkt');
+		my $obj = APos->new( x=>11, y=>22, name=>'pkt');
 		$obj->x(33);
 		$obj->z(5);
 		$obj->color('gray');
