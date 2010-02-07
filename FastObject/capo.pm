@@ -25,7 +25,7 @@ our $VERSION = 1.0;
 
 class {
 	inherite 'pracownik';
-	has 'pracownicy', default=>12;
+	has 'pracownicy', default=>'default';
 };
 
 

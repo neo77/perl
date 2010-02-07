@@ -40,43 +40,43 @@ sub class(&;$) {
 		#print "Creating $classname (globals)\n";
 		eval <<EOE;
 			package $classname;
-			use strict;
-			# --- package const
 			our \%attribs;
 			our \$attribs_size = 0;
-			our \$max_objects = 1;
-			our \@objects = 128;
-			our \@free_list;
+			our \$max_objects = 0;
+			our \@objects = ();
+			our \@free_list = ();
 			our \%default_param_values;
 
 			sub new {
 				my (\$class,\%params) = \@_;
 			
 				my \$self = (\@$classname\::free_list) ? ( shift \@$classname\::free_list ) : \$$classname\::max_objects++;
-				for my \$key (keys \%attribs) {
-					\$$classname\::objects[ \$self*\$$classname\::attribs_size + \$$classname\::attribs{"\$key"} ] = \$params{\$key} || \$$classname\::default_param_values{"\$key"};
-				}
+				my \$current_pos = \$self*\$$classname\::attribs_size;
+			
+				map { \$$classname\::objects[ \$current_pos + \$$classname\::attribs{\$_} ] = \$params{\$_} || \$$classname\::default_param_values{\$_} || undef } keys \%$classname\::attribs;
 
-				return bless \\\$self, \$class;
+				bless \\\$self, \$class;
 			}
 			sub DESTROY {
 				push \@$classname\::free_list, \${\$_[0]};
 			}
 EOE
+				#for my \$key (keys \%attribs) {
+				#	\$$classname\::objects[ \$current_size + \$$classname\::attribs{"\$key"} ] = \$params{\$key} || \$$classname\::default_param_values{"\$key"};
+				#}
 		#print "_class_code{$classname} = p_code\n";
-		$_class_code{"$classname"} = $p_code;
 #				for my \$key (keys \%params) {
 #					\$$classname\::objects[ \$self*\$$classname\::attribs_size + \$$classname\::attribs{"\$key"} ] = \$params{\$key} || \$$classname\::default_param_values{"\$key"};
 #				}
 
-	}
 
+		$_class_code{"$classname"} = $p_code;
+	}
+#map
 	#print "runs _class_code ($classname)\n";
 	&{$_class_code{"$classname"}};
 
 	$_processed_class = undef if $_processed_class eq $classname;
-	# create new
-	# create accessors
 }
 
 #=------
@@ -94,12 +94,12 @@ sub has($;@) {
 #  inherite
 	eval <<EOE
 		\$$classname\::attribs{$p_attrib_name} = \$$classname\::attribs_size++;;
-			\$$classname\::default_param_values{$p_attrib_name} = \$p_default;
+		\$$classname\::default_param_values{$p_attrib_name} = \$p_default if \$p_default;
 		package $classname;
 		# inherite check
 		sub $p_attrib_name {
-			(\@_>1)?(\$$classname\::objects[ \${\$_[0]}*\$$classname\::attribs_size + \$$classname\::attribs{"$p_attrib_name"} ] = \$_[1]):
-				\$$classname\::objects[ \${\$_[0]}*\$$classname\::attribs_size + \$$classname\::attribs{"$p_attrib_name"} ];
+			(\@_>1)?(\$$classname\::objects[ \${\$_[0]}*\$$classname\::attribs_size + \$$classname\::attribs{$p_attrib_name} ] = \$_[1]):
+				\$$classname\::objects[ \${\$_[0]}*\$$classname\::attribs_size + \$$classname\::attribs{$p_attrib_name} ];
 		};
 EOE
 			#return \$$classname\::objects[ \$\$self*\$$classname\::attribs_size + \$$classname\::attribs{"$p_attrib_name"} ];
@@ -112,7 +112,7 @@ EOE
 #* inheriting support
 # RETURN: put_return_value_here
 sub inherite {
-	my $p_parent_class = shift;
+	my ($p_parent_class) = @_;
 	
 	my $classname = caller;
 	#print "Inheriting from $p_parent_class ($classname)\n";
