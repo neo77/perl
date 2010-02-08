@@ -26,12 +26,12 @@ use osoba;
 # FIXME (autoACR): write why are you using osoba (do you realy need it?)
 
 
-my $obj = new capo(pracownicy=>'params');
+my $obj = new capo(pracownicy=>0);
 my $obj2 = new capo;
 my $obj3 = new capo;
-print $obj2->pracownicy;
-$obj2->pracownicy(3);
-print $obj2->pracownicy;
+#print $obj2->pracownicy;
+#$obj2->pracownicy(3);
+#print $obj2->pracownicy;
 _internal_class_Dump('capo',1);
 
 package FastObject;

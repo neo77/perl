@@ -8,10 +8,12 @@
 # FIXME (autoACR): update Info field
 package FastObject;
 
+# mouse .. small and fast 
+
 use strict;
 use warnings;
 
-#use Data::Dumper; # _internal_class_Dump
+use 5.10.0;
 #=------------------------------------------------------------------------ USE, CONSTANTS..
 
 our $VERSION = 1.0;
@@ -34,7 +36,6 @@ sub class(&;$) {
 	my ($p_code) = @_;
 	my $classname = $_processed_class || caller;
 
-	#print "---> \%$classname (".(caller).")\n";
 	# create package globals
 	unless ($_processed_class)  {
 		#print "Creating $classname (globals)\n";
@@ -50,10 +51,9 @@ sub class(&;$) {
 			sub new {
 				my (\$class,\%params) = \@_;
 			
-				my \$self = (\@$classname\::free_list) ? ( shift \@$classname\::free_list ) : \$$classname\::max_objects++;
-				my \$current_pos = \$self*\$$classname\::attribs_size;
+				my \$self = (\@$classname\::free_list) ? ( shift \@$classname\::free_list ) : \$$classname\::attribs_size*\$$classname\::max_objects++;
 			
-				map { \$$classname\::objects[ \$current_pos + \$$classname\::attribs{\$_} ] = \$params{\$_} || \$$classname\::default_param_values{\$_} || undef } keys \%$classname\::attribs;
+				map { \$$classname\::objects[ \$self + \$$classname\::attribs{\$_} ] = \$params{\$_} // \$$classname\::default_param_values{\$_} } keys \%$classname\::attribs;
 
 				bless \\\$self, \$class;
 			}
@@ -61,19 +61,9 @@ sub class(&;$) {
 				push \@$classname\::free_list, \${\$_[0]};
 			}
 EOE
-				#for my \$key (keys \%attribs) {
-				#	\$$classname\::objects[ \$current_size + \$$classname\::attribs{"\$key"} ] = \$params{\$key} || \$$classname\::default_param_values{"\$key"};
-				#}
-		#print "_class_code{$classname} = p_code\n";
-#				for my \$key (keys \%params) {
-#					\$$classname\::objects[ \$self*\$$classname\::attribs_size + \$$classname\::attribs{"\$key"} ] = \$params{\$key} || \$$classname\::default_param_values{"\$key"};
-#				}
-
 
 		$_class_code{"$classname"} = $p_code;
 	}
-#map
-	#print "runs _class_code ($classname)\n";
 	&{$_class_code{"$classname"}};
 
 	$_processed_class = undef if $_processed_class eq $classname;
@@ -98,8 +88,8 @@ sub has($;@) {
 		package $classname;
 		# inherite check
 		sub $p_attrib_name {
-			(\@_>1)?(\$$classname\::objects[ \${\$_[0]}*\$$classname\::attribs_size + \$$classname\::attribs{$p_attrib_name} ] = \$_[1]):
-				\$$classname\::objects[ \${\$_[0]}*\$$classname\::attribs_size + \$$classname\::attribs{$p_attrib_name} ];
+			(\@_>1)?(\$$classname\::objects[ \${\$_[0]} + \$$classname\::attribs{$p_attrib_name} ] = \$_[1]):
+				\$$classname\::objects[ \${\$_[0]} + \$$classname\::attribs{$p_attrib_name} ];
 		};
 EOE
 			#return \$$classname\::objects[ \$\$self*\$$classname\::attribs_size + \$$classname\::attribs{"$p_attrib_name"} ];
