@@ -30,8 +30,9 @@ my $obj = new capo(pracownicy=>0);
 my $obj2 = new capo;
 my $obj3 = new capo;
 #print $obj2->pracownicy;
-#$obj2->pracownicy(3);
-#print $obj2->pracownicy;
+$obj2->pracownicy(3);
+print $obj2->szef;
+$obj2->szef(3);
 _internal_class_Dump('capo',1);
 
 package FastObject;

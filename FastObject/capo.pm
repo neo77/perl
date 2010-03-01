@@ -26,6 +26,7 @@ our $VERSION = 1.0;
 class {
 	inherite 'pracownik';
 	has 'pracownicy';
+	has 'szef' => (default => 'cheffe', is => 'ro');
 };
 
 
