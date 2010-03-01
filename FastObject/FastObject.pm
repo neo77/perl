@@ -77,21 +77,35 @@ EOE
 sub has($;@) {
 	my ($p_attrib_name, %params) = @_;
 
-	my $p_default = $params{'default'};
+	my $p_default 	= $params{'default'}; 			# default value
+	my $p_is 		= $params{'is'} || 'rw'; 		# type ro/rw
 
-	my $classname = $_processed_class || caller;
+	my $classname = $_processed_class || 'FastObject::auto'caller;
 	##print "evaluating: \$$classname\::attribs{$p_attrib_name} = \$$classname\::attribs_size++; (".(caller).")\n";
 #  inherite
-	eval <<EOE
-		\$$classname\::attribs{$p_attrib_name} = \$$classname\::attribs_size++;;
-		\$$classname\::default_param_values{$p_attrib_name} = \$p_default if \$p_default;
-		package $classname;
-		# inherite check
-		sub $p_attrib_name {
-			(\@_>1)?(\$$classname\::objects[ \${\$_[0]} + \$$classname\::attribs{$p_attrib_name} ] = \$_[1]):
-				\$$classname\::objects[ \${\$_[0]} + \$$classname\::attribs{$p_attrib_name} ];
-		};
+	if ($p_is eq 'ro') {
+		eval <<EOE
+			\$$classname\::attribs{$p_attrib_name} = \$$classname\::attribs_size++;;
+			\$$classname\::default_param_values{$p_attrib_name} = \$p_default if \$p_default;
+			package $classname;
+			# inherite check
+			sub $p_attrib_name {
+				(\@_>1)?(die "'$classname' class Internal Error: attribute '$p_attrib_name' is readonly"):
+					\$$classname\::objects[ \${\$_[0]} + \$$classname\::attribs{$p_attrib_name} ];
+			};
 EOE
+	} else {
+		eval <<EOE
+			\$$classname\::attribs{$p_attrib_name} = \$$classname\::attribs_size++;;
+			\$$classname\::default_param_values{$p_attrib_name} = \$p_default if \$p_default;
+			package $classname;
+			# inherite check
+			sub $p_attrib_name {
+				(\@_>1)?(\$$classname\::objects[ \${\$_[0]} + \$$classname\::attribs{$p_attrib_name} ] = \$_[1]):
+					\$$classname\::objects[ \${\$_[0]} + \$$classname\::attribs{$p_attrib_name} ];
+			};
+EOE
+	}
 			#return \$$classname\::objects[ \$\$self*\$$classname\::attribs_size + \$$classname\::attribs{"$p_attrib_name"} ];
 }
 # TODO (autoACR): update function documentation at header (put_return_value_here)
@@ -162,8 +176,8 @@ sub _internal_class_Dump($;$) {
 #
 
 
+7&&7
 
-1;
 __END__
 sub new { 
 	my ($class,%params) = @_;
@@ -195,7 +209,3 @@ sub x {
 	($_[1]) ? $object[ ${$_[0]}*5 + 0 ] = $_[1] : $object[ ${$_[0]}*5 + 0 ];
 }
 
-# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 87)
-# TODO (autoACR): update function documentation at header (put_return_value_here)
-# FIXME (autoACR): PERL Syntax error sub not closed or { "#" } problem! (start parsing on: 87)
-# TODO (autoACR): update function documentation at header (put_return_value_here)
