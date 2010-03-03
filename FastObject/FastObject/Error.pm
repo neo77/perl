@@ -28,8 +28,7 @@ our $VERSION = 1.0;
 
 class {
     has 'error';
-}
-
+};
 #=------------------------------------------------------------------------ PRIVATE FUNCTIONS
 # start every private function with '_' sign
 
@@ -47,7 +46,28 @@ class {
 #* put_description_here
 # RETURN: put_return_value_here
 sub error {
-    
+    my ($self,$val) = @_;
+    print "dddddddddd".$val;
+    if (defined($val)) {
+        die "dobled error" if $self->_error_flag;
+        return $self->SUPER::error($val);
+    } else {
+        return $self->SUPER::error;
+    }
+}
+# TODO (autoACR): update function/group documentation at header (put_description_here)
+# TODO (autoACR): update function documentation at header (put_return_value_here)
+
+#=--------------
+#  _error_flag
+#=--------------
+#* put_description_here
+# RETURN: put_return_value_here
+sub _error_flag {
+    my $self = shift;
+    my $e = $self->SUPER::error;
+    warn "ddd" if defined($e);
+    warn "nnn";
 }
 # TODO (autoACR): update function/group documentation at header (put_description_here)
 # TODO (autoACR): update function documentation at header (put_return_value_here)

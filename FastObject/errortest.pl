@@ -36,9 +36,27 @@ class {
     has 'top';
 };
 
+#=------
+#  top
+#=------
+#* put_description_here
+# RETURN: put_return_value_here
+sub top {
+    my ($self,$val) = @_;
+    if (defined($val)) {
+        return $self->SUPER::top($val*2);
+    } else {
+        return $self->SUPER::top;
+    }
+}
+# TODO (autoACR): update function/group documentation at header (put_description_here)
+# TODO (autoACR): update function documentation at header (put_return_value_here)
+
 package main;
 
 my $self =  new AnyOther;
 $self->error('cut');
+$self->top('4');
 print "talk to me: ".$self->error."\n";
+print "talk to me: ".$self->top."\n";
 

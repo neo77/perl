@@ -11,8 +11,9 @@ package FastObject;
 # mouse .. small and fast 
 
 use strict;
-use warnings;
-
+#use warnings;
+use diagnostics;
+# FIXME (autoACR): write why are you using diagnostics (do you realy need it?)
 use 5.10.0;
 #=------------------------------------------------------------------------ USE, CONSTANTS..
 
@@ -27,6 +28,7 @@ my %_class_code;				# class code hash (class definition for each class
 #=------------------------------------------------------------------------ PUBLIC FUNCTIONS (CLASS)
 #
 
+
 #=--------
 #  class
 #=--------
@@ -35,18 +37,13 @@ my %_class_code;				# class code hash (class definition for each class
 sub class(&;$) {
 	my ($p_code) = @_;
 	my $classname = $_processed_class || caller;
+    my $auto_classname = 'FastObject::auto::'.$classname;
 
 	# create package globals
 	unless ($_processed_class)  {
 		#print "Creating $classname (globals)\n";
 		eval <<EOE;
-			package $classname;
-			our \%attribs;
-			our \$attribs_size = 0;
-			our \$max_objects = 0;
-			our \@objects = ();
-			our \@free_list = ();
-			our \%default_param_values;
+			package $auto_classname;
 
 			sub new {
 				my (\$class,\%params) = \@_;
@@ -60,6 +57,15 @@ sub class(&;$) {
 			sub DESTROY {
 				push \@$classname\::free_list, \${\$_[0]};
 			}
+            package $classname;
+            use base '$auto_classname';
+			our \%attribs;
+			our \$attribs_size = 0;
+			our \$max_objects = 0;
+			our \@objects = ();
+			our \@free_list = ();
+			our \%default_param_values;
+
 EOE
 
 		$_class_code{"$classname"} = $p_code;
@@ -80,14 +86,16 @@ sub has($;@) {
 	my $p_default 	= $params{'default'}; 			# default value
 	my $p_is 		= $params{'is'} || 'rw'; 		# type ro/rw
 
-	my $classname = $_processed_class || 'FastObject::auto'caller;
+	my $classname = $_processed_class || caller;
+    my $auto_classname = 'FastObject::auto::'.$classname;
+
 	##print "evaluating: \$$classname\::attribs{$p_attrib_name} = \$$classname\::attribs_size++; (".(caller).")\n";
 #  inherite
 	if ($p_is eq 'ro') {
 		eval <<EOE
 			\$$classname\::attribs{$p_attrib_name} = \$$classname\::attribs_size++;;
 			\$$classname\::default_param_values{$p_attrib_name} = \$p_default if \$p_default;
-			package $classname;
+			package $auto_classname;
 			# inherite check
 			sub $p_attrib_name {
 				(\@_>1)?(die "'$classname' class Internal Error: attribute '$p_attrib_name' is readonly"):
@@ -98,7 +106,7 @@ EOE
 		eval <<EOE
 			\$$classname\::attribs{$p_attrib_name} = \$$classname\::attribs_size++;;
 			\$$classname\::default_param_values{$p_attrib_name} = \$p_default if \$p_default;
-			package $classname;
+			package $auto_classname;
 			# inherite check
 			sub $p_attrib_name {
 				(\@_>1)?(\$$classname\::objects[ \${\$_[0]} + \$$classname\::attribs{$p_attrib_name} ] = \$_[1]):
@@ -117,9 +125,11 @@ EOE
 # RETURN: put_return_value_here
 sub inherite {
 	my ($p_parent_class) = @_;
+
 	
 	my $classname = caller;
-	#print "Inheriting from $p_parent_class ($classname)\n";
+
+#	print "Inheriting from $p_parent_class ($classname)\n";
 	# create package globals
 	eval "package $classname; use base '$p_parent_class' ";
 
